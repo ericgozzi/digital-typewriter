@@ -1,8 +1,13 @@
 let firstKey = true;
 let p_number = 0;
 
+
+
+var simpleCommands = ["bold", "italic", "save", "animate"];
+
+
+
 document.addEventListener('keydown', function(event) {
-  console.log('Key pressed: ', event.key);
   checkKey(event.key);
 });
 
@@ -58,7 +63,7 @@ function addKeyToText(key){
    var newText = existingText + key;
 
    if(paragraph){paragraph.textContent = newText;}
-   findWordBetweenDots(newText);
+   if(key == ":"){checkPattern(newText)};
 }
 
 
@@ -81,39 +86,93 @@ function removeLastChar(){
 }
 
 
-function findWordBetweenDots(text){
-  const regex = /\:(\w+)\:/;
-  const match = text.match(regex);
-  if(match && match[1]){
-    console.log(":YES:")
-    console.log(match)
-    console.log(match[1])
-    changeTextWithEmoji(match)
+function checkPattern(text){
+  const regexSimple = /\:(\w+)\:/;
+  const matchSimpleCommand = text.match(regexSimple);
+  const regexComplex = /:([^:>]+)>([^:]+):/;
+  const matchComplexCommand = text.match(regexComplex);
+  if(matchSimpleCommand && matchSimpleCommand[1]){
+    simpleCommand(matchSimpleCommand)
+  }else if(matchComplexCommand && matchComplexCommand[1]){
+    complexCommand(matchComplexCommand)
   }else{
     console.log(":NO:")
   }
 }
 
-function changeTextWithEmoji(match){
+function simpleCommand(command){
+  if (simpleCommands.includes(command)){
+    console.log("This is a simple command")
+  }else{
+    setEmoji(command)
+  }
+}
+
+
+function complexCommand(match){
+  var command = match[1]
+  var attribute = match[2]
+  if(command == "highlight"){
+    highligth(attribute)
+  }else if(command == "color"){
+    textColor(attribute)
+  }else if(command == "bckcolor"){
+    setBackgroundColor(attribute)
+  }else if(command == "align"){
+    textAlign(attribute)
+  }
+
+  removCommandFromText(match)
+}
+
+function removCommandFromText(match){
   var existingText;
-
   var paragraph = document.getElementById("par_"+p_number);
-
   if(paragraph){existingText = paragraph.textContent;}
   else{existingText = "";}
-
-  var emoji = getRightEmoji(match[1])
-
-  var newText = existingText.replace(match[0], emoji);
-
+  var newText = existingText.replace(match[0], "");
   if(paragraph){paragraph.textContent = newText;}
 }
 
-function getRightEmoji(match){
-  if(match == "happy"){return "😄"}
-  else if(match == "coffee"){return "☕️"}
-  else if(match == "flower"){return "🌸"}
-  else if(match == "sad"){return "🙁"}
-  else if(match == "house"){return "🏠"}
-  else if(match == "rhino"){return "🦏"}
+function setEmoji(command){
+  var existingText;
+  var paragraph = document.getElementById("par_"+p_number);
+  if(paragraph){existingText = paragraph.textContent;}
+  else{existingText = "";}
+  var emoji = getRightEmoji(command[1])
+  var newText = existingText.replace(command[0], emoji);
+  if(paragraph){paragraph.textContent = newText;}
+}
+
+function getRightEmoji(command){
+  if(command == "happy"){return "😄"}
+  else if(command == "coffee"){return "☕️"}
+  else if(command == "flower"){return "🌸"}
+  else if(command == "sad"){return "🙁"}
+  else if(command == "house"){return "🏠"}
+  else if(command == "rhino"){return "🦏"}
+  else if(command == "beer"){return "🍺"}
+  else if(command == "grasshopper"){return "🦗"}
+  else if(command == "ladybug"){return "🐞"}
+  else{return ""};
+}
+
+
+function highligth(color){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.backgroundColor = color;
+}
+
+function textColor(color){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.color = color;
+}
+
+function setBackgroundColor(color){
+  document.body.style.backgroundColor = color;
+}
+
+function textAlign(position){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.textAlign = position
 }
