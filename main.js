@@ -1,5 +1,5 @@
 //import { connectLambda, getStore } from '/node_modules/@netlify/blobs/dist/main.js'
-import { getStore } from '@netlify/blobs'
+import { getStore } from './node_modules/@netlify/blobs/dist/main.js'
 
 const store = getStore({
   name: 'my-store',
