@@ -224,19 +224,6 @@ function save(projectName){
 
 
 
-async function saveHtmlSnippet(snippet) {
-  const response = await fetch('/.netlify/functions/save-snippet', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ htmlSnippet: snippet }),  // Send the HTML snippet to the function
-  });
-
-  const data = await response.json();  // Get the response from the function
-  console.log(data);  // Log the result (URL or error)
-}
-
 
 
 
