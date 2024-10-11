@@ -1,7 +1,8 @@
+//const fs = require('fs'); 
+
+
 let firstKey = true;
 let p_number = 0;
-
-
 
 var simpleCommands = ["bold", "italic", "save", "animate"];
 
@@ -226,3 +227,29 @@ function open(projectName){
   console.log(htmlContent);
 }
 
+
+async function readJsonFile(){
+  try{
+    const response = await fetch("./public/library.json");
+    const data = await response.json();
+    return data;
+  }catch{
+    console.error("Error fetching data: ", error);
+  }
+}
+
+
+function writeJsonFile(){
+  const newObject = {
+    name: "Paola",
+    birth: "24 february 1967"
+  }
+
+  const jsonString = JSON.stringify(newObject);
+  console.log(jsonString)
+
+  writeFile('./public/newPerson.json'. jsonString)
+  
+}
+
+writeJsonFile()
