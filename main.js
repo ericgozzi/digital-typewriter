@@ -154,6 +154,38 @@ function getRightEmoji(command){
   else if(command == "beer"){return "🍺"}
   else if(command == "grasshopper"){return "🦗"}
   else if(command == "ladybug"){return "🐞"}
+  else if(command == "heart"){return "❤"}
+  else if(command == "earth"){return "🌍"}
+  else if(command == "kiwi"){return "🥝"}
+  else if(command == "arrow"){return "➡"}
+  else if(command == "barrow"){return "⬅"}
+  else if(command == "tarrow"){return "⬆"}
+  else if(command == "darrow"){return "⬇"}
+  else if(command == "bike"){return "🚲"}
+  else if(command == "car"){return "🚗"}
+  else if(command == "star"){return "⭐"}
+  else if(command == "moon"){return "🌙"}
+  else if(command == "sun"){return "☀"}
+  else if(command == "rain"){return "🌧"}
+  else if(command == "storm"){return "⛈"}
+  else if(command == "cloud"){return "☁"}
+  else if(command == "snow"){return "🌨"}
+  else if(command == "hot"){return "🥵"}
+  else if(command == "cold"){return "🥶"}
+  else if(command == "fire"){return "🔥"}
+  else if(command == "water"){return "💧"}
+  else if(command == "cool"){return "😎"}
+  else if(command == "inlove"){return "😍"}
+  else if(command == "asleep"){return "😴"}
+  else if(command == "yeah"){return "😜"}
+  else if(command == "kaboom"){return "🤯"}
+  else if(command == "cowboy"){return "🤠"}
+  else if(command == "devil"){return "😈"}
+  else if(command == "angel"){return "😇"}
+  else if(command == "alien"){return "👽"}
+  else if(command == "ohh"){return "😲"}
+  else if(command == "thinking"){return "🤔"}
+  else if(command == "sick"){return "🤒"}
   else{return ""};
 }
 
@@ -176,3 +208,4 @@ function textAlign(position){
   let paragraph = document.getElementById("par_"+p_number);
   paragraph.style.textAlign = position
 }
+
