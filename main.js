@@ -1,8 +1,10 @@
-//const fs = require('fs'); 
-
-
 let firstKey = true;
 let p_number = 0;
+let is_paragraph_deletable = true;
+let highest_paragraph_number = p_number
+
+let text_default_dimension = 40
+let text_default_color = "black"
 
 var simpleCommands = ["bold", "italic", "save", "animate"];
 
@@ -31,16 +33,23 @@ function checkKey(key){
 
 
 function newParagraph(key){
+  if(is_paragraph_deletable){
   p_number += 1
   var newParagraph = document.createElement('p');
   newParagraph.id = "par_"+p_number
+  newParagraph.style.color = text_default_color;
+  newParagraph.style.fontSize = text_default_dimension + "px";
   document.body.appendChild(newParagraph);
-  if(key != "Enter"){checkKey(key)}
+  //if(key != "Enter"){checkKey(key)}
+  console.log(p_number)
+  highest_paragraph_number = p_number
+  }
 }
 
 
 function removeParagraph(){
-  if(p_number != 0){
+  if(is_paragraph_deletable){
+  if(p_number > 1){
     var paragraph = document.getElementById("par_" + p_number);
     if(paragraph){
       paragraph.remove();
@@ -49,6 +58,24 @@ function removeParagraph(){
   }else{
     firstKey = true;
   }
+  console.log(p_number)
+  highest_paragraph_number = p_number
+}
+}
+
+function setActiveParagraph(goalNumber){
+  var old_p = p_number;
+  var new_p = goalNumber;
+
+  var old_paragraph = document.getElementById("par_" + old_p);
+  var new_paragraph = document.getElementById("par_" + new_p);
+
+  old_paragraph.style.borderRightStyle = "none";
+  new_paragraph.style.borderRightStyle = "solid";
+  new_paragraph.style.borderColor = "gray";
+  p_number = new_p
+  if(p_number == highest_paragraph_number){is_paragraph_deletable = true}
+  else{is_paragraph_deletable = false}
 }
 
 
@@ -96,17 +123,34 @@ function checkPattern(text){
     simpleCommand(matchSimpleCommand)
   }else if(matchComplexCommand && matchComplexCommand[1]){
     complexCommand(matchComplexCommand)
-  }else{
-    console.log(":NO:")
   }
 }
 
-function simpleCommand(command){
-  if (simpleCommands.includes(command)){
-    console.log("This is a simple command")
+function simpleCommand(match){
+  const command = match [1];
+  if(command == "smaller"){
+    setTextSmaller()
+  }else if(command == "small"){
+    setTextSmall()
+  }else if(command == "normal"){
+    setTextNormal()
+  }else if(command == "big"){
+    setTextBig()
+  }else if(command == "bigger"){
+    setTextBigger()
+  }else if(command == "huge"){
+    setTextHuge()
+  }else if(command == "italic"){
+    setTextItalic()
+  }else if(command == "bold"){
+    setTextBold()
+  }else if(command == "activelast"){
+    removeCommandFromText(match)
+    setActiveParagraph(highest_paragraph_number)
   }else{
-    setEmoji(command)
+    setEmoji(match)
   }
+  removeCommandFromText(match)
 }
 
 
@@ -121,16 +165,19 @@ function complexCommand(match){
     setBackgroundColor(attribute)
   }else if(command == "align"){
     textAlign(attribute)
-  }else if(command == "save"){
-    save(attribute)
-  }else if(command == "open"){
-    open(attribute)
+  }else if(command == "textcolor"){
+    change_all_text_color(attribute)
+  }else if(command == "defaultcolor"){
+    change_default_color(attribute)
+  }else if(command == "active"){
+    removeCommandFromText(match)
+    setActiveParagraph(attribute)
   }
 
-  removCommandFromText(match)
+  removeCommandFromText(match)
 }
 
-function removCommandFromText(match){
+function removeCommandFromText(match){
   var existingText;
   var paragraph = document.getElementById("par_"+p_number);
   if(paragraph){existingText = paragraph.textContent;}
@@ -205,6 +252,17 @@ function textColor(color){
   paragraph.style.color = color;
 }
 
+function change_all_text_color(color){
+  let paragraph = document.getElementsByTagName('p');
+  for(let i = 0; i<paragraph.length; i++){
+    paragraph[i].style.color = color;
+  }
+}
+
+function change_default_color(color){
+  text_default_color = color
+}
+
 function setBackgroundColor(color){
   document.body.style.backgroundColor = color;
 }
@@ -212,6 +270,56 @@ function setBackgroundColor(color){
 function textAlign(position){
   let paragraph = document.getElementById("par_"+p_number);
   paragraph.style.textAlign = position
+}
+
+
+function setTextSmaller(){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.fontSize = "20px";
+}
+
+function setTextSmall(){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.fontSize = "30px";
+}
+
+function setTextNormal(){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.fontSize = "40px";
+}
+
+function setTextBig(){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.fontSize = "50px";
+  console.log("big")
+}
+
+function setTextBigger(){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.fontSize = "60px";
+}
+
+function setTextHuge(){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.fontSize = "100px";
+}
+
+function setTextItalic(){
+  let paragraph = document.getElementById("par_"+p_number);
+  if (paragraph.style.fontStyle == "italic"){
+    paragraph.style.fontStyle = "normal"
+  }else{
+    paragraph.style.fontStyle = "italic";
+  }
+}
+
+function setTextBold(){
+  let paragraph = document.getElementById("par_"+p_number);
+  if (paragraph.style.fontWeight == "bold"){
+    paragraph.style.fontWeight = "normal"
+  }else{
+    paragraph.style.fontWeight = "bold";
+  }
 }
 
 
@@ -238,18 +346,3 @@ async function readJsonFile(){
   }
 }
 
-
-function writeJsonFile(){
-  const newObject = {
-    name: "Paola",
-    birth: "24 february 1967"
-  }
-
-  const jsonString = JSON.stringify(newObject);
-  console.log(jsonString)
-
-  writeFile('./public/newPerson.json'. jsonString)
-  
-}
-
-writeJsonFile()
