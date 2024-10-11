@@ -1,20 +1,3 @@
-//import { connectLambda, getStore } from '/node_modules/@netlify/blobs/dist/main.js'
-import { getStore } from './node_modules/@netlify/blobs/dist/main.js'
-
-const store = getStore({
-  name: 'my-store',
-  siteID: 'ad222b7f-406d-448c-841d-4ea844293239',
-  token: 'nfp_SxC2DsxUSH2PqV3UdQktFoPm7LzACysqa85b',
-})
-
-console.log(await store.get('some-key'))
-
-
-
-
-
-
-
 let firstKey = true;
 let p_number = 0;
 
