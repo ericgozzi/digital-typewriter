@@ -1,5 +1,8 @@
+import { connectLambda, getStore } from '/node_modules/@netlify/blobs/dist/main.js'
 
+const store = getStore('my-store')
 
+console.log(await store.get('my-key'))
 
 let firstKey = true;
 let p_number = 0;
@@ -221,10 +224,6 @@ function save(projectName){
  var snippet = '<p> THIS IS A SNIPPET <p>'
  saveHtmlSnippet(snippet)
 }
-
-
-
-
 
 
 
