@@ -1,3 +1,6 @@
+
+
+
 let firstKey = true;
 let p_number = 0;
 
@@ -120,6 +123,10 @@ function complexCommand(match){
     setBackgroundColor(attribute)
   }else if(command == "align"){
     textAlign(attribute)
+  }else if(command == "save"){
+    save(attribute)
+  }else if(command == "open"){
+    open(attribute)
   }
 
   removCommandFromText(match)
@@ -207,5 +214,35 @@ function setBackgroundColor(color){
 function textAlign(position){
   let paragraph = document.getElementById("par_"+p_number);
   paragraph.style.textAlign = position
+}
+
+
+function save(projectName){
+ var snippet = '<p> THIS IS A SNIPPET <p>'
+ saveHtmlSnippet(snippet)
+}
+
+
+
+async function saveHtmlSnippet(snippet) {
+  const response = await fetch('/.netlify/functions/save-snippet', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ htmlSnippet: snippet }),  // Send the HTML snippet to the function
+  });
+
+  const data = await response.json();  // Get the response from the function
+  console.log(data);  // Log the result (URL or error)
+}
+
+
+
+
+
+function open(projectName){
+  const htmlContent = get(projectName)
+  console.log(htmlContent);
 }
 
