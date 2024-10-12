@@ -16,7 +16,8 @@ document.addEventListener('keydown', function(event) {
 
 
 function checkKey(key){
-  var exceptionKeys = ["Shift", "Enter", "Backspace", "Meta", "Alt", "CapsLock", "Tab", "Control"]
+  var exceptionKeys = ["Shift", "Enter", "Backspace", "Meta", "Alt", "CapsLock", "Tab", "Control", "_"]
+  if(key == "_"){return}
   if (firstKey){
     firstKey = false
     newParagraph(key)
@@ -43,6 +44,8 @@ function newParagraph(key){
   //if(key != "Enter"){checkKey(key)}
   console.log(p_number)
   highest_paragraph_number = p_number
+  setActiveParagraph(p_number)
+  try{document.getElementById("par_"+(p_number-1)).style.borderRightStyle = "none";}catch{};
   }
 }
 
@@ -72,6 +75,7 @@ function setActiveParagraph(goalNumber){
 
   old_paragraph.style.borderRightStyle = "none";
   new_paragraph.style.borderRightStyle = "solid";
+  new_paragraph.style.borderWidth = "10px";
   new_paragraph.style.borderColor = "gray";
   p_number = new_p
   if(p_number == highest_paragraph_number){is_paragraph_deletable = true}
@@ -94,6 +98,28 @@ function addKeyToText(key){
    if(key == ":"){checkPattern(newText)};
 }
 
+function showParagraphNumber(){
+  hideParagraphNumber()
+  let paragraphs = document.getElementsByTagName('p');
+  for(var i = 0; i<paragraphs.length; i++){
+    let id = paragraphs[i].id;
+    let number = id.split("_")[1];
+    let text = paragraphs[i].textContent
+    let newText = "[" + number + "]_" + text;
+    paragraphs[i].textContent = newText
+  }
+}
+
+function hideParagraphNumber(){
+  let paragraphs = document.getElementsByTagName('p');
+  for(var i = 0; i<paragraphs.length; i++){
+    let text = paragraphs[i].textContent;
+    if(text.includes("_")){
+      let newText = text.split("_")[1];
+      paragraphs[i].textContent = newText
+    }
+  }
+}
 
 
 function removeLastChar(){
@@ -147,6 +173,13 @@ function simpleCommand(match){
   }else if(command == "activelast"){
     removeCommandFromText(match)
     setActiveParagraph(highest_paragraph_number)
+  }else if(command == "showparid"){
+    showParagraphNumber();
+  }else if(command == "hideparid"){
+    hideParagraphNumber();
+  }else if(command == "print"){
+    removeCommandFromText(match);
+    printPage();
   }else{
     setEmoji(match)
   }
@@ -186,62 +219,33 @@ function removeCommandFromText(match){
   if(paragraph){paragraph.textContent = newText;}
 }
 
-function setEmoji(command){
+async function setEmoji(command){
   var existingText;
   var paragraph = document.getElementById("par_"+p_number);
   if(paragraph){existingText = paragraph.textContent;}
   else{existingText = "";}
-  var emoji = getRightEmoji(command[1])
+  const emoji = await getRightEmoji(command[1])
   var newText = existingText.replace(command[0], emoji);
   if(paragraph){paragraph.textContent = newText;}
 }
 
-function getRightEmoji(command){
-  if(command == "happy"){return "😄"}
-  else if(command == "coffee"){return "☕️"}
-  else if(command == "flower"){return "🌸"}
-  else if(command == "sad"){return "🙁"}
-  else if(command == "house"){return "🏠"}
-  else if(command == "rhino"){return "🦏"}
-  else if(command == "beer"){return "🍺"}
-  else if(command == "grasshopper"){return "🦗"}
-  else if(command == "ladybug"){return "🐞"}
-  else if(command == "heart"){return "❤"}
-  else if(command == "earth"){return "🌍"}
-  else if(command == "kiwi"){return "🥝"}
-  else if(command == "arrow"){return "➡"}
-  else if(command == "barrow"){return "⬅"}
-  else if(command == "tarrow"){return "⬆"}
-  else if(command == "darrow"){return "⬇"}
-  else if(command == "bike"){return "🚲"}
-  else if(command == "car"){return "🚗"}
-  else if(command == "star"){return "⭐"}
-  else if(command == "moon"){return "🌙"}
-  else if(command == "sun"){return "☀"}
-  else if(command == "rain"){return "🌧"}
-  else if(command == "storm"){return "⛈"}
-  else if(command == "cloud"){return "☁"}
-  else if(command == "snow"){return "🌨"}
-  else if(command == "hot"){return "🥵"}
-  else if(command == "cold"){return "🥶"}
-  else if(command == "fire"){return "🔥"}
-  else if(command == "water"){return "💧"}
-  else if(command == "cool"){return "😎"}
-  else if(command == "inlove"){return "😍"}
-  else if(command == "asleep"){return "😴"}
-  else if(command == "yeah"){return "😜"}
-  else if(command == "kaboom"){return "🤯"}
-  else if(command == "cowboy"){return "🤠"}
-  else if(command == "devil"){return "😈"}
-  else if(command == "angel"){return "😇"}
-  else if(command == "alien"){return "👽"}
-  else if(command == "ohh"){return "😲"}
-  else if(command == "thinking"){return "🤔"}
-  else if(command == "sick"){return "🤒"}
-  else{return ""};
+async function getRightEmoji(emoji_name){
+  try{
+    const response = await fetch("./public/emojis.json");
+    const data = await response.json();
+    var emoji = data[emoji_name];
+    return emoji;
+  }catch{
+    console.error("Error fetching data: ", error);
+  }
 }
 
-
+function printPage(){
+  hideParagraphNumber();
+  document.getElementById("par_"+p_number).style.borderRightStyle = "none";
+  window.print();
+  document.getElementById("par_"+p_number).style.borderRightStyle = "solid";
+}
 function highligth(color){
   let paragraph = document.getElementById("par_"+p_number);
   paragraph.style.backgroundColor = color;
