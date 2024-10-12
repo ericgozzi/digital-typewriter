@@ -9,6 +9,17 @@ let text_default_color = "black"
 var simpleCommands = ["bold", "italic", "save", "animate"];
 
 
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+var pageToOpen = urlParams.get('page');
+if(pageToOpen){
+  console.log(pageToOpen)
+  pageToOpen = pageToOpen.replace(/"/g, "")
+  console.log(pageToOpen)
+  open(pageToOpen);
+}
+
+
 
 document.addEventListener('keydown', function(event) {
   checkKey(event.key);
@@ -180,6 +191,13 @@ function simpleCommand(match){
   }else if(command == "print"){
     removeCommandFromText(match);
     printPage();
+  }else if(command == "reset"){
+    resetAll();
+  }else if(command == "copyhtml"){
+    removeCommandFromText(match)
+    copyHtmlToClipboad();
+  }else if(command == "commandlist"){
+    window.open("https://digital-typewriter.netlify.app/?page=commands")
   }else{
     setEmoji(match)
   }
@@ -191,7 +209,7 @@ function complexCommand(match){
   var command = match[1]
   var attribute = match[2]
   if(command == "highlight"){
-    highligth(attribute)
+    highlight(attribute, p_number)
   }else if(command == "color"){
     textColor(attribute)
   }else if(command == "bckcolor"){
@@ -205,6 +223,8 @@ function complexCommand(match){
   }else if(command == "active"){
     removeCommandFromText(match)
     setActiveParagraph(attribute)
+  }else if(command == "open"){
+    open(attribute)
   }
 
   removeCommandFromText(match)
@@ -246,7 +266,8 @@ function printPage(){
   window.print();
   document.getElementById("par_"+p_number).style.borderRightStyle = "solid";
 }
-function highligth(color){
+
+function highlight(color){
   let paragraph = document.getElementById("par_"+p_number);
   paragraph.style.backgroundColor = color;
 }
@@ -327,6 +348,21 @@ function setTextBold(){
 }
 
 
+function resetAll(){
+  document.body.innerHTML = " "
+  firstKey = true;
+  p_number = 0;
+  is_paragraph_deletable = true;
+  highest_paragraph_number = p_number
+}
+
+function copyHtmlToClipboad(){
+  var html = document.body.innerHTML.toString();
+  console.log()
+  html = html.replace(/"/g, "'");
+  navigator.clipboard.writeText(html);
+}
+
 function save(projectName){
  var snippet = '<p> THIS IS A SNIPPET <p>'
  saveHtmlSnippet(snippet)
@@ -334,9 +370,23 @@ function save(projectName){
 
 
 
-function open(projectName){
-  const htmlContent = get(projectName)
-  console.log(htmlContent);
+async function open(pageName){
+  try{
+    const response = await fetch("./public/library.json");
+    const data = await response.json();
+    const html = data[pageName];
+    const bckcolor = data[pageName + "bckColor"];
+    setBackgroundColor(bckcolor);
+
+    resetAll()
+    
+    document.body.innerHTML = html
+    highest_paragraph_number = document.getElementsByTagName("p").length
+    p_number = highest_paragraph_number;
+    setActiveParagraph(highest_paragraph_number)
+  }catch{
+    console.error("Error fetching data: ", error);
+  }
 }
 
 
