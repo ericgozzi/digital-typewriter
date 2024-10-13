@@ -47,7 +47,7 @@ function checkKey(key){
 function newParagraph(key){
   if(is_paragraph_deletable){
   p_number += 1
-  var newParagraph = document.createElement('p');
+  var newParagraph = document.createElement('div');
   newParagraph.id = "par_"+p_number
   newParagraph.style.color = text_default_color;
   newParagraph.style.fontSize = text_default_dimension + "px";
@@ -111,7 +111,7 @@ function addKeyToText(key){
 
 function showParagraphNumber(){
   hideParagraphNumber()
-  let paragraphs = document.getElementsByTagName('p');
+  let paragraphs = document.getElementsByTagName('div');
   for(var i = 0; i<paragraphs.length; i++){
     let id = paragraphs[i].id;
     let number = id.split("_")[1];
@@ -122,7 +122,7 @@ function showParagraphNumber(){
 }
 
 function hideParagraphNumber(){
-  let paragraphs = document.getElementsByTagName('p');
+  let paragraphs = document.getElementsByTagName('div');
   for(var i = 0; i<paragraphs.length; i++){
     let text = paragraphs[i].textContent;
     if(text.includes("_")){
@@ -225,6 +225,10 @@ function complexCommand(match){
     setActiveParagraph(attribute)
   }else if(command == "open"){
     open(attribute)
+  }else if(command == "space"){
+    insertSpace(attribute)
+  }else if(command == "font"){
+    setFont(attribute)
   }
 
   removeCommandFromText(match)
@@ -278,7 +282,7 @@ function textColor(color){
 }
 
 function change_all_text_color(color){
-  let paragraph = document.getElementsByTagName('p');
+  let paragraph = document.getElementsByTagName('div');
   for(let i = 0; i<paragraph.length; i++){
     paragraph[i].style.color = color;
   }
@@ -347,6 +351,16 @@ function setTextBold(){
   }
 }
 
+function insertSpace(value){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.marginTop = value * 10 + "px";
+}
+
+
+function setFont(font){
+  let paragraph = document.getElementById("par_"+p_number);
+  paragraph.style.fontFamily = font;
+}
 
 function resetAll(){
   document.body.innerHTML = " "
@@ -381,7 +395,7 @@ async function open(pageName){
     resetAll()
     
     document.body.innerHTML = html
-    highest_paragraph_number = document.getElementsByTagName("p").length
+    highest_paragraph_number = document.getElementsByTagName('div').length
     p_number = highest_paragraph_number;
     setActiveParagraph(highest_paragraph_number)
   }catch{
