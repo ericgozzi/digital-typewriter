@@ -193,6 +193,8 @@ function simpleCommand(match){
     printPage();
   }else if(command == "reset"){
     resetAll();
+  }else if(command == "paste"){
+    paste();
   }else if(command == "copyhtml"){
     removeCommandFromText(match)
     copyHtmlToClipboad();
@@ -375,6 +377,15 @@ function copyHtmlToClipboad(){
   console.log()
   html = html.replace(/"/g, "'");
   navigator.clipboard.writeText(html);
+}
+
+
+
+async function paste(){
+  try{
+    const text = await navigator.clipboard.readText();
+    addKeyToText(text)
+  }catch{}
 }
 
 function save(projectName){
