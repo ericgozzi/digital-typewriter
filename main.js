@@ -231,6 +231,8 @@ function complexCommand(match){
     insertSpace(attribute)
   }else if(command == "font"){
     setFont(attribute)
+  }else if(command == "zoo"){
+    zoo(attribute)
   }
 
   removeCommandFromText(match)
@@ -362,6 +364,20 @@ function insertSpace(value){
 function setFont(font){
   let paragraph = document.getElementById("par_"+p_number);
   paragraph.style.fontFamily = font;
+}
+
+function zoo(number){
+  const animals = ["🦅", "🦉", "🦇", "🐺", "🐗", "🐴", "🦄", "🫎", "🐝", "🪱", "🐛", "🦋", "🐌", "🐞", "🐜", "🪰", "🪲", "🪳", "🦟", "🦗", "🕷️", "🦂",
+    "🐢", "🐍", "🦎", "🦖", "🦕", "🐙", "🦑", "🪼", "🦐", "🦞", "🦀", "🐡", "🐠", "🐟", "🐬", "🐳", "🐋", "🦈", "🦭", "🐊", "🐅", "🐆", "🦓", "🦍", 
+    "🦧", "🦣", "🐘", "🦛", "🦏", "🐪", "🐫", "🦒", "🦘", "🦬", "🐃", "🐂", "🐄", "🫏", "🐎", "🐖", "🐏", "🐑", "🦙", "🐐", "🦌", "🐕", "🐩", "🐈",
+    "🐈‍⬛", "🐓", "🦃", "🦤", "🦚", "🦜", "🦢", "🦩", "🐇", "🦝", "🦨", "🦡", "🦫", "🦦", "🦥", "🐁", "🐀", "🐿️", "🦔", "🐉"]
+  let zoo = ""
+  for(var i = 0; i < number; i++){
+    const randomIndex = Math.floor(Math.random() * animals.length);
+    const randomAnimal = animals[randomIndex];
+    zoo = zoo + randomAnimal
+  }
+  addKeyToText(zoo)
 }
 
 function resetAll(){
