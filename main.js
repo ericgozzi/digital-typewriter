@@ -56,7 +56,6 @@ function newParagraph(key){
   newParagraph.style.fontSize = text_default_dimension + "px";
   document.body.appendChild(newParagraph);
   //if(key != "Enter"){checkKey(key)}
-  console.log(p_number)
   highest_paragraph_number = p_number
   setActiveParagraph(p_number)
   try{document.getElementById("par_"+(p_number-1)).style.borderRightStyle = "none";}catch{};
@@ -75,7 +74,6 @@ function removeParagraph(){
   }else{
     firstKey = true;
   }
-  console.log(p_number)
   highest_paragraph_number = p_number
 }
 }
@@ -102,15 +100,7 @@ function addKeyToText(key){
    var existingText;
 
    var paragraph = document.getElementById("par_"+p_number);
-
-  //  if(paragraph){existingText = paragraph.inne;}
-  //  else{existingText = "";}
-
-  //  var newText = existingText + key;
   paragraph.append(key)
-
-   //if(paragraph){paragraph.textContent = newText;}
-   //if(key == ":"){checkPattern(newText)};
    if(key == ":"){checkPattern(paragraph.innerText)};
 }
 
@@ -139,33 +129,25 @@ function hideParagraphNumber(){
 
 
 function removeLastChar(){
-  var existingText;
-
   var paragraph = document.getElementById("par_"+p_number);
-
+  console.log(paragraph.childNodes.length)
   for(let i = paragraph.childNodes.length -1 ; i>=0; i--){
     const node = paragraph.childNodes[i];
     if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length>0){
       node.nodeValue = node.nodeValue.slice(0, -1);
       break;
     }
-
+    
     if(node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'a'){
       paragraph.removeChild(node);
       break;
     }
+
+    if(paragraph.innerHTML == ""){
+      removeParagraph();
+      break;
+    }
   }
-
-/*  if(paragraph){existingText = paragraph.textContent;}
-  else{existingText = "";}
-
-  if(existingText.length == 0){
-    removeParagraph()
-  }else{
-    var newText = existingText.slice(0, -1);
-
-    if(paragraph){paragraph.textContent = newText;} 
-  }*/
 }
 
 

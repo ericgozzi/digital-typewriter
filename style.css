@@ -58,7 +58,6 @@ a:hover{
   animation: slide 4s linear infinite;
   position: relative;
   left: 100%;
-  white-space: nowrap;
   width: 100%;
   border: none;
 }
