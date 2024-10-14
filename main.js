@@ -29,7 +29,7 @@ document.addEventListener('keydown', function(event) {
 
 function checkKey(key){
   if(type){
-    var exceptionKeys = ["Shift", "Enter", "Backspace", "Meta", "Alt", "CapsLock", "Tab", "Control", "_"]
+    var exceptionKeys = ["Shift", "Enter", "Backspace", "Meta", "Alt", "CapsLock", "Tab", "Control", "_", "Escape"]
     if(key == "_"){return}
     if (firstKey){
       firstKey = false
@@ -48,18 +48,32 @@ function checkKey(key){
 
 
 function newParagraph(key){
+
+ try{var  paragraph = document.getElementById("par_"+p_number);
+    if(is_paragraph_deletable && paragraph.innerHTML != ""){
+      p_number += 1
+      var newParagraph = document.createElement('div');
+      newParagraph.id = "par_"+p_number
+      newParagraph.style.color = text_default_color;
+      newParagraph.style.fontSize = text_default_dimension + "px";
+      document.body.appendChild(newParagraph);
+      highest_paragraph_number = p_number
+      setActiveParagraph(p_number)
+      try{document.getElementById("par_"+(p_number-1)).style.borderRightStyle = "none";}catch{};
+    }
+ }catch{
   if(is_paragraph_deletable){
-  p_number += 1
-  var newParagraph = document.createElement('div');
-  newParagraph.id = "par_"+p_number
-  newParagraph.style.color = text_default_color;
-  newParagraph.style.fontSize = text_default_dimension + "px";
-  document.body.appendChild(newParagraph);
-  //if(key != "Enter"){checkKey(key)}
-  highest_paragraph_number = p_number
-  setActiveParagraph(p_number)
-  try{document.getElementById("par_"+(p_number-1)).style.borderRightStyle = "none";}catch{};
+    p_number += 1
+    var newParagraph = document.createElement('div');
+    newParagraph.id = "par_"+p_number
+    newParagraph.style.color = text_default_color;
+    newParagraph.style.fontSize = text_default_dimension + "px";
+    document.body.appendChild(newParagraph);
+    highest_paragraph_number = p_number
+    setActiveParagraph(p_number)
+    try{document.getElementById("par_"+(p_number-1)).style.borderRightStyle = "none";}catch{};
   }
+ }
 }
 
 
@@ -75,6 +89,7 @@ function removeParagraph(){
     firstKey = true;
   }
   highest_paragraph_number = p_number
+  setActiveParagraph(highest_paragraph_number);
 }
 }
 
@@ -131,6 +146,12 @@ function hideParagraphNumber(){
 function removeLastChar(){
   var paragraph = document.getElementById("par_"+p_number);
   console.log(paragraph.childNodes.length)
+
+  if(paragraph.innerHTML == ""){
+    removeParagraph();
+    return
+  }
+
   for(let i = paragraph.childNodes.length -1 ; i>=0; i--){
     const node = paragraph.childNodes[i];
     if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length>0){
@@ -140,11 +161,6 @@ function removeLastChar(){
     
     if(node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'a'){
       paragraph.removeChild(node);
-      break;
-    }
-
-    if(paragraph.innerHTML == ""){
-      removeParagraph();
       break;
     }
   }
