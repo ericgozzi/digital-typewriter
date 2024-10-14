@@ -10,9 +10,16 @@ p{
 
 
 div#pasteLinkDiv{
-  width: 50%;
-  position: fixed;
-  z-index: 10;
-  margin-left: 25%;
-  margin-top: 20%;
+  width: 75vw;
+}
+
+textarea{
+  width: 75vw;
+}
+
+a{
+  transition: 0.3s;
+}
+a:hover{
+  margin-left: 10px;
 }

@@ -143,7 +143,20 @@ function removeLastChar(){
 
   var paragraph = document.getElementById("par_"+p_number);
 
-  if(paragraph){existingText = paragraph.textContent;}
+  for(let i = paragraph.childNodes.length -1 ; i>=0; i--){
+    const node = paragraph.childNodes[i];
+    if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length>0){
+      node.nodeValue = node.nodeValue.slice(0, -1);
+      break;
+    }
+
+    if(node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'a'){
+      paragraph.removeChild(node);
+      break;
+    }
+  }
+
+/*  if(paragraph){existingText = paragraph.textContent;}
   else{existingText = "";}
 
   if(existingText.length == 0){
@@ -151,8 +164,8 @@ function removeLastChar(){
   }else{
     var newText = existingText.slice(0, -1);
 
-    if(paragraph){paragraph.textContent = newText;}
-  }
+    if(paragraph){paragraph.textContent = newText;} 
+  }*/
 }
 
 
@@ -389,12 +402,13 @@ function zoo(number){
 
 function getLink(){
   type = false
-  const div = document.createElement("div");
+  var div = document.createElement("div");
+  var paragraph = document.getElementById("par_" + p_number);
   div.id = 'pasteLinkDiv';
-  const html = "<textarea id='pastedLink'>Paste link here...</textarea><button id='button'> OK </button>";
+  var html = "<textarea id='pastedLink'>Paste link here...</textarea><button id='button'> OK </button>";
   div.innerHTML = html;
   document.body.appendChild(div);
-  const button = document.getElementById("button");
+  var button = document.getElementById("button");
   button.addEventListener("click", insertLink);
 }
 
@@ -406,6 +420,8 @@ function insertLink(){
   console.log(link)
   linkElement.href = link
   linkElement.innerText = ">>"
+  linkElement.style.color = document.getElementById("par_" + p_number).style.color;
+  linkElement.style.textDecoration = "none"
   const paragraph = document.getElementById("par_" + p_number);
   paragraph.append(linkElement)
   document.getElementById("pasteLinkDiv").remove()
