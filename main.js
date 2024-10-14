@@ -218,6 +218,12 @@ function simpleCommand(match){
     copyHtmlToClipboad();
   }else if(command == "link"){
     getLink();
+  }else if(command == "strobe"){
+    strobe();
+  }else if(command == "rave"){
+    rave();
+  }else if(command == "slide"){
+    slide();
   }else if(command == "commandlist"){
     window.open("https://digital-typewriter.netlify.app/?page=commands")
   }else{
@@ -384,6 +390,32 @@ function insertSpace(value){
 function setFont(font){
   let paragraph = document.getElementById("par_"+p_number);
   paragraph.style.fontFamily = font;
+}
+
+function strobe(){
+  let paragraph = document.getElementById("par_"+p_number);
+  if(paragraph.classList.contains("strobe")){
+    paragraph.classList.remove("strobe");
+  }else{
+    paragraph.classList.add("strobe")
+  }
+}
+
+function rave(){
+  if(document.body.classList.contains("rave")){
+    document.body.classList.remove("rave");
+  }else{
+    document.body.classList.add("rave");
+  }
+}
+
+function slide(){
+  let paragraph = document.getElementById("par_"+p_number);
+  if(paragraph.classList.contains("slide")){
+    paragraph.classList.remove("slide");
+  }else{
+    paragraph.classList.add("slide")
+  }
 }
 
 function zoo(number){
