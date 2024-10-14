@@ -7,3 +7,12 @@ p{
   width: 100%;
   margin: 0px;
 }
+
+
+div#pasteLinkDiv{
+  width: 50%;
+  position: fixed;
+  z-index: 10;
+  margin-left: 25%;
+  margin-top: 20%;
+}

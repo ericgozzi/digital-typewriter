@@ -198,6 +198,8 @@ function simpleCommand(match){
   }else if(command == "copyhtml"){
     removeCommandFromText(match)
     copyHtmlToClipboad();
+  }else if(command == "link"){
+    getLink();
   }else if(command == "commandlist"){
     window.open("https://digital-typewriter.netlify.app/?page=commands")
   }else{
@@ -380,6 +382,29 @@ function zoo(number){
   addKeyToText(zoo)
 }
 
+function getLink(){
+  const div = document.createElement("div");
+  div.id = 'pasteLinkDiv';
+  const html = "<textarea id='pastedLink'>Paste link here...</textarea><button id='button'> OK </button>";
+  div.innerHTML = html;
+  document.body.appendChild(div);
+  const button = document.getElementById("button");
+  button.addEventListener("click", insertLink);
+}
+
+
+function insertLink(){
+  const linkElement = document.createElement('a');
+  const textarea = document.getElementById("pastedLink");
+  const link = textarea.value;
+  console.log(link)
+  linkElement.href = link
+  linkElement.innerText = ">>"
+  const paragraph = document.getElementById("par_" + p_number);
+  paragraph.append(linkElement)
+  document.getElementById("pasteLinkDiv").remove()
+};
+
 function resetAll(){
   document.body.innerHTML = " "
   firstKey = true;
@@ -441,3 +466,10 @@ async function readJsonFile(){
   }
 }
 
+
+
+
+//  <div id="pasteLinkDiv">
+// <textarea id="pastedLink">Paste link here...</textarea>
+// <button onclick="insertLink()"> OK </button>
+// </div>
