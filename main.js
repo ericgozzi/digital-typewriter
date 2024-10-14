@@ -2,6 +2,7 @@ let firstKey = true;
 let p_number = 0;
 let is_paragraph_deletable = true;
 let highest_paragraph_number = p_number
+let type = true;
 
 let text_default_dimension = 40
 let text_default_color = "black"
@@ -27,19 +28,21 @@ document.addEventListener('keydown', function(event) {
 
 
 function checkKey(key){
-  var exceptionKeys = ["Shift", "Enter", "Backspace", "Meta", "Alt", "CapsLock", "Tab", "Control", "_"]
-  if(key == "_"){return}
-  if (firstKey){
-    firstKey = false
-    newParagraph(key)
-  }
-  if (!exceptionKeys.includes(key)){
-    addKeyToText(key)
-  }
-  else if (key == "Backspace"){
-    removeLastChar()
-  } else if (key == "Enter"){
-    newParagraph(key)
+  if(type){
+    var exceptionKeys = ["Shift", "Enter", "Backspace", "Meta", "Alt", "CapsLock", "Tab", "Control", "_"]
+    if(key == "_"){return}
+    if (firstKey){
+      firstKey = false
+      newParagraph(key)
+    }
+    if (!exceptionKeys.includes(key)){
+      addKeyToText(key)
+    }
+    else if (key == "Backspace"){
+      removeLastChar()
+    } else if (key == "Enter"){
+      newParagraph(key)
+    }
   }
 }
 
@@ -100,13 +103,15 @@ function addKeyToText(key){
 
    var paragraph = document.getElementById("par_"+p_number);
 
-   if(paragraph){existingText = paragraph.textContent;}
-   else{existingText = "";}
+  //  if(paragraph){existingText = paragraph.inne;}
+  //  else{existingText = "";}
 
-   var newText = existingText + key;
+  //  var newText = existingText + key;
+  paragraph.append(key)
 
-   if(paragraph){paragraph.textContent = newText;}
-   if(key == ":"){checkPattern(newText)};
+   //if(paragraph){paragraph.textContent = newText;}
+   //if(key == ":"){checkPattern(newText)};
+   if(key == ":"){checkPattern(paragraph.innerText)};
 }
 
 function showParagraphNumber(){
@@ -383,6 +388,7 @@ function zoo(number){
 }
 
 function getLink(){
+  type = false
   const div = document.createElement("div");
   div.id = 'pasteLinkDiv';
   const html = "<textarea id='pastedLink'>Paste link here...</textarea><button id='button'> OK </button>";
@@ -403,6 +409,7 @@ function insertLink(){
   const paragraph = document.getElementById("par_" + p_number);
   paragraph.append(linkElement)
   document.getElementById("pasteLinkDiv").remove()
+  type = true
 };
 
 function resetAll(){
