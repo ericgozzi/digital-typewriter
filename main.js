@@ -15,10 +15,11 @@ import { showParagraphNumber, hideParagraphNumber } from "./functions/paragraphs
 import { printPage, getLink } from "./functions/io.mjs";
 import { copyHtmlToClipboad } from "./functions/io.mjs";
 
+import createBlob from "./netlify/functions/createBlob.mts";
 
 
 
-
+createBlob();
 
 
 
