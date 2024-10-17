@@ -1,3 +1,33 @@
+import {highlight, change_all_text_color, setBackgroundColor, textColor} from "./functions/format.mjs";
+import { textAlign, setFont} from "./functions/format.mjs";
+import { setTextSmaller, setTextSmall, setTextNormal, setTextBig, setTextBigger, setTextHuge } from "./functions/format.mjs";
+import { setTextItalic, setTextBold} from "./functions/format.mjs";
+import { insertSpace } from "./functions/format.mjs";
+
+import { setEmoji, generateZoo } from "./functions/emojis.mjs";
+
+import { strobe, rave, slide } from "./functions/style.mjs";
+
+import { removeCommandFromText } from "./functions/commands.mjs";
+
+import { showParagraphNumber, hideParagraphNumber } from "./functions/paragraphs.mjs";
+
+import { printPage, getLink } from "./functions/io.mjs";
+import { copyHtmlToClipboad } from "./functions/io.mjs";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 let firstKey = true;
 let p_number = 0;
 let is_paragraph_deletable = true;
@@ -7,7 +37,6 @@ let type = true;
 let text_default_dimension = 40
 let text_default_color = "black"
 
-var simpleCommands = ["bold", "italic", "save", "animate"];
 
 
 const queryString = window.location.search;
@@ -23,17 +52,16 @@ if(pageToOpen){
 
 
 document.addEventListener('keydown', function(event) {
-  checkKey(event.key);
+  if(type){checkKey(event.key);};
 });
 
 
 function checkKey(key){
-  if(type){
     var exceptionKeys = ["Shift", "Enter", "Backspace", "Meta", "Alt", "CapsLock", "Tab", "Control", "_", "Escape"]
     if(key == "_"){return}
     if (firstKey){
       firstKey = false
-      newParagraph(key)
+      newParagraph()
     }
     if (!exceptionKeys.includes(key)){
       addKeyToText(key)
@@ -41,193 +69,64 @@ function checkKey(key){
     else if (key == "Backspace"){
       removeLastChar()
     } else if (key == "Enter"){
-      newParagraph(key)
+      newParagraph()
     }
-  }
-}
-
-
-function newParagraph(key){
-
- try{var  paragraph = document.getElementById("par_"+p_number);
-    if(is_paragraph_deletable && paragraph.innerHTML != ""){
-      p_number += 1
-      var newParagraph = document.createElement('div');
-      newParagraph.id = "par_"+p_number
-      newParagraph.style.color = text_default_color;
-      newParagraph.style.fontSize = text_default_dimension + "px";
-      document.body.appendChild(newParagraph);
-      highest_paragraph_number = p_number
-      setActiveParagraph(p_number)
-      try{document.getElementById("par_"+(p_number-1)).style.borderRightStyle = "none";}catch{};
-    }
- }catch{
-  if(is_paragraph_deletable){
-    p_number += 1
-    var newParagraph = document.createElement('div');
-    newParagraph.id = "par_"+p_number
-    newParagraph.style.color = text_default_color;
-    newParagraph.style.fontSize = text_default_dimension + "px";
-    document.body.appendChild(newParagraph);
-    highest_paragraph_number = p_number
-    setActiveParagraph(p_number)
-    try{document.getElementById("par_"+(p_number-1)).style.borderRightStyle = "none";}catch{};
-  }
- }
-}
-
-
-function removeParagraph(){
-  if(is_paragraph_deletable){
-  if(p_number > 1){
-    var paragraph = document.getElementById("par_" + p_number);
-    if(paragraph){
-      paragraph.remove();
-      p_number -= 1
-    }
-  }else{
-    firstKey = true;
-  }
-  highest_paragraph_number = p_number
-  setActiveParagraph(highest_paragraph_number);
-}
-}
-
-function setActiveParagraph(goalNumber){
-  var old_p = p_number;
-  var new_p = goalNumber;
-
-  var old_paragraph = document.getElementById("par_" + old_p);
-  var new_paragraph = document.getElementById("par_" + new_p);
-
-  old_paragraph.style.borderRightStyle = "none";
-  new_paragraph.style.borderRightStyle = "solid";
-  new_paragraph.style.borderWidth = "10px";
-  new_paragraph.style.borderColor = "gray";
-  p_number = new_p
-  if(p_number == highest_paragraph_number){is_paragraph_deletable = true}
-  else{is_paragraph_deletable = false}
 }
 
 
 
-function addKeyToText(key){
-   var existingText;
-
-   var paragraph = document.getElementById("par_"+p_number);
-  paragraph.append(key)
-   if(key == ":"){checkPattern(paragraph.innerText)};
-}
-
-function showParagraphNumber(){
-  hideParagraphNumber()
-  let paragraphs = document.getElementsByTagName('div');
-  for(var i = 0; i<paragraphs.length; i++){
-    let id = paragraphs[i].id;
-    let number = id.split("_")[1];
-    let text = paragraphs[i].textContent
-    let newText = "[" + number + "]_" + text;
-    paragraphs[i].textContent = newText
-  }
-}
-
-function hideParagraphNumber(){
-  let paragraphs = document.getElementsByTagName('div');
-  for(var i = 0; i<paragraphs.length; i++){
-    let text = paragraphs[i].textContent;
-    if(text.includes("_")){
-      let newText = text.split("_")[1];
-      paragraphs[i].textContent = newText
-    }
-  }
-}
-
-
-function removeLastChar(){
-  var paragraph = document.getElementById("par_"+p_number);
-  console.log(paragraph.childNodes.length)
-
-  if(paragraph.innerHTML == ""){
-    removeParagraph();
-    return
-  }
-
-  for(let i = paragraph.childNodes.length -1 ; i>=0; i--){
-    const node = paragraph.childNodes[i];
-    if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length>0){
-      node.nodeValue = node.nodeValue.slice(0, -1);
-      break;
-    }
-    
-    if(node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'a'){
-      paragraph.removeChild(node);
-      break;
-    }
-  }
-}
-
-
-function checkPattern(text){
-  const regexSimple = /\:(\w+)\:/;
-  const matchSimpleCommand = text.match(regexSimple);
-  const regexComplex = /:([^:>]+)>([^:]+):/;
-  const matchComplexCommand = text.match(regexComplex);
-  if(matchSimpleCommand && matchSimpleCommand[1]){
-    simpleCommand(matchSimpleCommand)
-  }else if(matchComplexCommand && matchComplexCommand[1]){
-    complexCommand(matchComplexCommand)
-  }
-}
-
-function simpleCommand(match){
+async function simpleCommand(match){
   const command = match [1];
   if(command == "smaller"){
-    setTextSmaller()
+    setTextSmaller(p_number)
   }else if(command == "small"){
-    setTextSmall()
+    setTextSmall(p_number)
   }else if(command == "normal"){
-    setTextNormal()
+    setTextNormal(p_number)
   }else if(command == "big"){
-    setTextBig()
+    setTextBig(p_number)
   }else if(command == "bigger"){
-    setTextBigger()
+    setTextBigger(p_number)
   }else if(command == "huge"){
-    setTextHuge()
+    setTextHuge(p_number)
   }else if(command == "italic"){
-    setTextItalic()
+    setTextItalic(p_number)
   }else if(command == "bold"){
-    setTextBold()
+    setTextBold(p_number)
   }else if(command == "activelast"){
-    removeCommandFromText(match)
+    removeCommandFromText(match, p_number)
     setActiveParagraph(highest_paragraph_number)
   }else if(command == "showparid"){
     showParagraphNumber();
   }else if(command == "hideparid"){
     hideParagraphNumber();
   }else if(command == "print"){
-    removeCommandFromText(match);
-    printPage();
+    removeCommandFromText(match, p_number);
+    hideParagraphNumber();
+    printPage(p_number);
   }else if(command == "reset"){
     resetAll();
   }else if(command == "paste"){
     paste();
   }else if(command == "copyhtml"){
-    removeCommandFromText(match)
+    removeCommandFromText(match, p_number)
     copyHtmlToClipboad();
   }else if(command == "link"){
-    getLink();
+    type = false;
+    await getLink(p_number)
+    type = true;
   }else if(command == "strobe"){
-    strobe();
+    strobe(p_number);
   }else if(command == "rave"){
-    rave();
+    rave(p_number);
   }else if(command == "slide"){
-    slide();
+    slide(p_number);
   }else if(command == "commandlist"){
     window.open("https://digital-typewriter.netlify.app/?page=commands")
   }else{
-    setEmoji(match)
+    setEmoji(match, p_number)
   }
-  removeCommandFromText(match)
+  removeCommandFromText(match, p_number)
 }
 
 
@@ -237,226 +136,48 @@ function complexCommand(match){
   if(command == "highlight"){
     highlight(attribute, p_number)
   }else if(command == "color"){
-    textColor(attribute)
+    textColor(attribute,p_number)
   }else if(command == "bckcolor"){
     setBackgroundColor(attribute)
   }else if(command == "align"){
-    textAlign(attribute)
+    textAlign(attribute, p_number)
   }else if(command == "textcolor"){
     change_all_text_color(attribute)
   }else if(command == "defaultcolor"){
     change_default_color(attribute)
   }else if(command == "active"){
-    removeCommandFromText(match)
+    removeCommandFromText(match, p_number)
     setActiveParagraph(attribute)
   }else if(command == "open"){
     open(attribute)
   }else if(command == "space"){
-    insertSpace(attribute)
+    insertSpace(attribute, p_number)
   }else if(command == "font"){
-    setFont(attribute)
+    setFont(attribute, p_number)
   }else if(command == "zoo"){
-    zoo(attribute)
+    const zoo = generateZoo(attribute)
+    addKeyToText(zoo)
   }
-
-  removeCommandFromText(match)
+  removeCommandFromText(match, p_number)
 }
 
-function removeCommandFromText(match){
-  var existingText;
-  var paragraph = document.getElementById("par_"+p_number);
-  if(paragraph){existingText = paragraph.textContent;}
-  else{existingText = "";}
-  var newText = existingText.replace(match[0], "");
-  if(paragraph){paragraph.textContent = newText;}
-}
 
-async function setEmoji(command){
-  var existingText;
-  var paragraph = document.getElementById("par_"+p_number);
-  if(paragraph){existingText = paragraph.textContent;}
-  else{existingText = "";}
-  const emoji = await getRightEmoji(command[1])
-  var newText = existingText.replace(command[0], emoji);
-  if(paragraph){paragraph.textContent = newText;}
-}
-
-async function getRightEmoji(emoji_name){
-  try{
-    const response = await fetch("./public/emojis.json");
-    const data = await response.json();
-    var emoji = data[emoji_name];
-    return emoji;
-  }catch{
-    console.error("Error fetching data: ", error);
-  }
-}
-
-function printPage(){
-  hideParagraphNumber();
-  document.getElementById("par_"+p_number).style.borderRightStyle = "none";
-  window.print();
-  document.getElementById("par_"+p_number).style.borderRightStyle = "solid";
-}
-
-function highlight(color){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.backgroundColor = color;
-}
-
-function textColor(color){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.color = color;
-}
-
-function change_all_text_color(color){
-  let paragraph = document.getElementsByTagName('div');
-  for(let i = 0; i<paragraph.length; i++){
-    paragraph[i].style.color = color;
-  }
-}
 
 function change_default_color(color){
   text_default_color = color
 }
 
-function setBackgroundColor(color){
-  document.body.style.backgroundColor = color;
-}
-
-function textAlign(position){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.textAlign = position
-}
 
 
-function setTextSmaller(){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.fontSize = "20px";
-}
-
-function setTextSmall(){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.fontSize = "30px";
-}
-
-function setTextNormal(){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.fontSize = "40px";
-}
-
-function setTextBig(){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.fontSize = "50px";
-  console.log("big")
-}
-
-function setTextBigger(){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.fontSize = "60px";
-}
-
-function setTextHuge(){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.fontSize = "100px";
-}
-
-function setTextItalic(){
-  let paragraph = document.getElementById("par_"+p_number);
-  if (paragraph.style.fontStyle == "italic"){
-    paragraph.style.fontStyle = "normal"
-  }else{
-    paragraph.style.fontStyle = "italic";
-  }
-}
-
-function setTextBold(){
-  let paragraph = document.getElementById("par_"+p_number);
-  if (paragraph.style.fontWeight == "bold"){
-    paragraph.style.fontWeight = "normal"
-  }else{
-    paragraph.style.fontWeight = "bold";
-  }
-}
-
-function insertSpace(value){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.marginTop = value * 10 + "px";
-}
 
 
-function setFont(font){
-  let paragraph = document.getElementById("par_"+p_number);
-  paragraph.style.fontFamily = font;
-}
-
-function strobe(){
-  let paragraph = document.getElementById("par_"+p_number);
-  if(paragraph.classList.contains("strobe")){
-    paragraph.classList.remove("strobe");
-  }else{
-    paragraph.classList.add("strobe")
-  }
-}
-
-function rave(){
-  if(document.body.classList.contains("rave")){
-    document.body.classList.remove("rave");
-  }else{
-    document.body.classList.add("rave");
-  }
-}
-
-function slide(){
-  let paragraph = document.getElementById("par_"+p_number);
-  if(paragraph.classList.contains("slide")){
-    paragraph.classList.remove("slide");
-  }else{
-    paragraph.classList.add("slide")
-  }
-}
-
-function zoo(number){
-  const animals = ["🦅", "🦉", "🦇", "🐺", "🐗", "🐴", "🦄", "🫎", "🐝", "🪱", "🐛", "🦋", "🐌", "🐞", "🐜", "🪰", "🪲", "🪳", "🦟", "🦗", "🕷️", "🦂",
-    "🐢", "🐍", "🦎", "🦖", "🦕", "🐙", "🦑", "🪼", "🦐", "🦞", "🦀", "🐡", "🐠", "🐟", "🐬", "🐳", "🐋", "🦈", "🦭", "🐊", "🐅", "🐆", "🦓", "🦍", 
-    "🦧", "🦣", "🐘", "🦛", "🦏", "🐪", "🐫", "🦒", "🦘", "🦬", "🐃", "🐂", "🐄", "🫏", "🐎", "🐖", "🐏", "🐑", "🦙", "🐐", "🦌", "🐕", "🐩", "🐈",
-    "🐈‍⬛", "🐓", "🦃", "🦤", "🦚", "🦜", "🦢", "🦩", "🐇", "🦝", "🦨", "🦡", "🦫", "🦦", "🦥", "🐁", "🐀", "🐿️", "🦔", "🐉"]
-  let zoo = ""
-  for(var i = 0; i < number; i++){
-    const randomIndex = Math.floor(Math.random() * animals.length);
-    const randomAnimal = animals[randomIndex];
-    zoo = zoo + randomAnimal
-  }
-  addKeyToText(zoo)
-}
-
-function getLink(){
-  type = false
-  var div = document.createElement("div");
-  var paragraph = document.getElementById("par_" + p_number);
-  div.id = 'pasteLinkDiv';
-  var html = "<textarea id='pastedLink'>Paste link here...</textarea><button id='button'> OK </button>";
-  div.innerHTML = html;
-  document.body.appendChild(div);
-  var button = document.getElementById("button");
-  button.addEventListener("click", insertLink);
-}
 
 
-function insertLink(){
-  const linkElement = document.createElement('a');
-  const textarea = document.getElementById("pastedLink");
-  const link = textarea.value;
-  console.log(link)
-  linkElement.href = link
-  linkElement.innerText = ">>"
-  linkElement.style.color = document.getElementById("par_" + p_number).style.color;
-  linkElement.style.textDecoration = "none"
-  const paragraph = document.getElementById("par_" + p_number);
-  paragraph.append(linkElement)
-  document.getElementById("pasteLinkDiv").remove()
-  type = true
-};
+
+
+
+
+
 
 function resetAll(){
   document.body.innerHTML = " "
@@ -465,15 +186,6 @@ function resetAll(){
   is_paragraph_deletable = true;
   highest_paragraph_number = p_number
 }
-
-function copyHtmlToClipboad(){
-  var html = document.body.innerHTML.toString();
-  console.log()
-  html = html.replace(/"/g, "'");
-  navigator.clipboard.writeText(html);
-}
-
-
 
 async function paste(){
   try{
@@ -486,8 +198,6 @@ function save(projectName){
  var snippet = '<p> THIS IS A SNIPPET <p>'
  saveHtmlSnippet(snippet)
 }
-
-
 
 async function open(pageName){
   try{
@@ -522,7 +232,112 @@ async function readJsonFile(){
 
 
 
-//  <div id="pasteLinkDiv">
-// <textarea id="pastedLink">Paste link here...</textarea>
-// <button onclick="insertLink()"> OK </button>
-// </div>
+
+
+
+function newParagraph(){
+  try{var  paragraph = document.getElementById("par_"+p_number);
+     if(is_paragraph_deletable && paragraph.innerHTML != ""){
+       p_number += 1
+       var newParagraph = document.createElement('div');
+       newParagraph.id = "par_"+p_number
+       newParagraph.style.color = text_default_color;
+       newParagraph.style.fontSize = text_default_dimension + "px";
+       document.body.appendChild(newParagraph);
+       highest_paragraph_number = p_number
+       setActiveParagraph(p_number)
+       try{document.getElementById("par_"+(p_number-1)).style.borderRightStyle = "none";}catch{};
+     }
+  }catch{
+   if(is_paragraph_deletable){
+     p_number += 1
+     var newParagraph = document.createElement('div');
+     newParagraph.id = "par_"+p_number
+     newParagraph.style.color = text_default_color;
+     newParagraph.style.fontSize = text_default_dimension + "px";
+     document.body.appendChild(newParagraph);
+     highest_paragraph_number = p_number
+     setActiveParagraph(p_number)
+     try{document.getElementById("par_"+(p_number-1)).style.borderRightStyle = "none";}catch{};
+   }
+  }
+ }
+ 
+ 
+ function removeParagraph(){
+   if(is_paragraph_deletable){
+   if(p_number > 1){
+     var paragraph = document.getElementById("par_" + p_number);
+     if(paragraph){
+       paragraph.remove();
+       p_number -= 1
+     }
+   }else{
+     firstKey = true;
+   }
+   highest_paragraph_number = p_number
+   setActiveParagraph(highest_paragraph_number);
+ }
+ }
+ 
+ function setActiveParagraph(goalNumber){
+   var old_p = p_number;
+   var new_p = goalNumber;
+ 
+   var old_paragraph = document.getElementById("par_" + old_p);
+   var new_paragraph = document.getElementById("par_" + new_p);
+ 
+   old_paragraph.style.borderRightStyle = "none";
+   new_paragraph.style.borderRightStyle = "solid";
+   new_paragraph.style.borderWidth = "10px";
+   new_paragraph.style.borderColor = "gray";
+   p_number = new_p
+   if(p_number == highest_paragraph_number){is_paragraph_deletable = true}
+   else{is_paragraph_deletable = false}
+ }
+ 
+ 
+ 
+ function addKeyToText(key){
+  var paragraph = document.getElementById("par_"+p_number);
+  paragraph.append(key)
+  if(key == ":"){checkPattern(paragraph.innerText)};
+ }
+
+
+ function removeLastChar(){
+  var paragraph = document.getElementById("par_"+p_number);
+  console.log(paragraph.childNodes.length)
+
+  if(paragraph.innerHTML == ""){
+    removeParagraph();
+    return
+  }
+
+  for(let i = paragraph.childNodes.length -1 ; i>=0; i--){
+    const node = paragraph.childNodes[i];
+    if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length>0){
+      node.nodeValue = node.nodeValue.slice(0, -1);
+      break;
+    }
+    
+    if(node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'a'){
+      paragraph.removeChild(node);
+      break;
+    }
+  }
+}
+
+
+
+function checkPattern(text){
+  const regexSimple = /\:(\w+)\:/;
+  const matchSimpleCommand = text.match(regexSimple);
+  const regexComplex = /:([^:>]+)>([^:]+):/;
+  const matchComplexCommand = text.match(regexComplex);
+  if(matchSimpleCommand && matchSimpleCommand[1]){
+    simpleCommand(matchSimpleCommand)
+  }else if(matchComplexCommand && matchComplexCommand[1]){
+    complexCommand(matchComplexCommand)
+  }
+}
