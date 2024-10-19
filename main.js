@@ -185,6 +185,7 @@ function resetAll(){
   p_number = 0;
   is_paragraph_deletable = true;
   highest_paragraph_number = p_number
+  setBackgroundColor("white")
 }
 
 async function paste(){
