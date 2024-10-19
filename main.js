@@ -57,7 +57,7 @@ document.addEventListener('keydown', function(event) {
 
 
 function checkKey(key){
-    var exceptionKeys = ["Shift", "Enter", "Backspace", "Meta", "Alt", "CapsLock", "Tab", "Control", "_", "Escape"]
+    var exceptionKeys = ["Shift", "Enter", "Backspace", "Meta", "Alt", "CapsLock", "Tab", "Control", "_", "Escape", "ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"]
     if(key == "_"){return}
     if (firstKey){
       firstKey = false
@@ -70,7 +70,29 @@ function checkKey(key){
       removeLastChar()
     } else if (key == "Enter"){
       newParagraph()
+
+
+    }else if (key == "ArrowUp"){
+      if(p_number == 1){
+        {return}
+      }else{
+        setActiveParagraph(p_number-1)
+      }
+
+
+
+    }else if(key == "ArrowDown"){
+      if (p_number + 1 == highest_paragraph_number){
+        setActiveParagraph(highest_paragraph_number)
+        p_number = highest_paragraph_number
+      }else if(p_number == highest_paragraph_number){
+        return
+      }else{
+        setActiveParagraph(p_number + 1)
+      }
     }
+
+    console.log(p_number)
 }
 
 
