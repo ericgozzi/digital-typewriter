@@ -12,7 +12,7 @@ import { removeCommandFromText } from "./functions/commands.mjs";
 
 import { showParagraphNumber, hideParagraphNumber } from "./functions/paragraphs.mjs";
 
-import { printPage, getLink } from "./functions/io.mjs";
+import { printPage } from "./functions/io.mjs";
 import { copyHtmlToClipboad } from "./functions/io.mjs";
 
 
@@ -134,9 +134,9 @@ async function simpleCommand(match){
     removeCommandFromText(match, p_number)
     copyHtmlToClipboad();
   }else if(command == "link"){
-    type = false;
-    await getLink(p_number)
-    type = true;
+
+    getLink(p_number)
+
   }else if(command == "strobe"){
     strobe(p_number);
   }else if(command == "rave"){
@@ -145,6 +145,9 @@ async function simpleCommand(match){
     slide(p_number);
   }else if(command == "commandlist"){
     window.open("https://digital-typewriter.netlify.app/?page=commands")
+  }else if(command == "save"){
+    removeCommandFromText(match, p_number)
+    downloadPage();   
   }else{
     setEmoji(match, p_number)
   }
@@ -223,21 +226,33 @@ function save(projectName){
 }
 
 async function open(pageName){
+  resetAll()
   try{
-    const response = await fetch("./public/library.json");
+    const response = await fetch("./public/library/" + pageName + ".json");
     const data = await response.json();
-    const html = data[pageName];
-    const bckcolor = data[pageName + "bckColor"];
+    const html = data["html"];
+    let bckcolor = data["backgroundColor"];
+    const bodyClasses = data["bodyClasses"];
+
+    if(bckcolor === ""){bckcolor = "white"}
     setBackgroundColor(bckcolor);
 
-    resetAll()
     
     document.body.innerHTML = html
     highest_paragraph_number = document.getElementsByTagName('div').length
     p_number = highest_paragraph_number;
     setActiveParagraph(highest_paragraph_number)
+
+    console.log(bodyClasses)
+    console.log(Object.keys(bodyClasses).length)
+
+    for(var i = 0; i<Object.keys(bodyClasses).length; i++){
+      console.log(bodyClasses[i])
+      document.body.classList.add(bodyClasses[i])
+    }
+    
   }catch{
-    console.error("Error fetching data: ", error);
+    console.error("Error fetching data");
   }
 }
 
@@ -363,4 +378,81 @@ function checkPattern(text){
   }else if(matchComplexCommand && matchComplexCommand[1]){
     complexCommand(matchComplexCommand)
   }
+}
+
+
+
+
+
+
+
+
+function getLink(p_number){
+  type = false;
+  var div = document.createElement("div");
+  var paragraph = document.getElementById("par_" + p_number);
+  div.id = 'pasteLinkDiv';
+  var html = "<textarea id='pastedLink' placeholder='paste link here...'></textarea><button id='button'> ✔ </button><button id='cancelButton'> ✖ </button>";
+  div.innerHTML = html;
+  document.body.appendChild(div);
+  var button = document.getElementById("button");
+  button.addEventListener("click", ()=> insertLink(p_number));
+  var cancel = document.getElementById("cancelButton");
+  cancel.addEventListener("click", ()=> cancelLink());
+}
+
+
+function insertLink(p_number){
+  const linkElement = document.createElement('a');
+  const textarea = document.getElementById("pastedLink");
+  const link = textarea.value;
+  linkElement.href = link
+  linkElement.innerText = ">>"
+  linkElement.style.color = document.getElementById("par_" + p_number).style.color;
+  linkElement.style.textDecoration = "none"
+  const paragraph = document.getElementById("par_" + p_number);
+  paragraph.append(linkElement)
+  document.getElementById("pasteLinkDiv").remove()
+  type = true
+  
+};
+
+
+function cancelLink(){
+  document.getElementById("pasteLinkDiv").remove()
+  type = true
+};
+
+
+
+
+function downloadPage(){
+  const page = {
+    html: document.body.innerHTML.toString().replace(/"/g, "'"),
+    backgroundColor: document.body.style.backgroundColor,
+    bodyClasses: document.body.classList
+  }
+
+  const jsonString = JSON.stringify(page);
+  console.log(jsonString)
+
+
+
+   // Create a Blob object with the JS content
+   const blob = new Blob([jsonString], { type: 'application/json' });
+
+
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'page.json'; // The name of the downloaded file
+
+    // Append the link to the body (not displayed)
+    document.body.appendChild(link);
+
+    // Programmatically click the link to trigger the download
+    link.click();
+
+   // Remove the link from the document
+   document.body.removeChild(link);
 }
