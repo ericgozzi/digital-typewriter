@@ -6,7 +6,7 @@ import { insertSpace } from "./functions/format.mjs";
 
 import { setEmoji, generateZoo } from "./functions/emojis.mjs";
 
-import { strobe, rave, slide } from "./functions/style.mjs";
+import { strobe, rave, slide, periodic} from "./functions/style.mjs";
 
 import { removeCommandFromText } from "./functions/commands.mjs";
 
@@ -143,6 +143,8 @@ async function simpleCommand(match){
     rave(p_number);
   }else if(command == "slide"){
     slide(p_number);
+  }else if(command == "periodic"){
+    periodic(p_number);
   }else if(command == "commandlist"){
     window.open("https://digital-typewriter.netlify.app/?page=commands")
   }else if(command == "save"){

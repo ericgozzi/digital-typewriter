@@ -28,3 +28,20 @@ export function slide(p_number){
         paragraph.classList.add("slide")
     }
 }
+
+
+export function periodic(p_number){
+    let paragraph = document.getElementById("par_"+p_number);
+    if(paragraph.classList.contains("periodic")){
+        paragraph.classList.remove("periodic");
+    }else{
+        paragraph.classList.add("periodic")
+    }
+}
+
+
+
+
+
+
+
