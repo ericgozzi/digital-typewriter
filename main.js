@@ -14,6 +14,7 @@ import { showParagraphNumber, hideParagraphNumber } from "./functions/paragraphs
 
 import { printPage } from "./functions/io.mjs";
 import { copyHtmlToClipboad } from "./functions/io.mjs";
+import { helpMe } from "./functions/io.mjs";
 
 
 
@@ -134,9 +135,7 @@ async function simpleCommand(match){
     removeCommandFromText(match, p_number)
     copyHtmlToClipboad();
   }else if(command == "link"){
-
     getLink(p_number)
-
   }else if(command == "strobe"){
     strobe(p_number);
   }else if(command == "rave"){
@@ -150,6 +149,8 @@ async function simpleCommand(match){
   }else if(command == "save"){
     removeCommandFromText(match, p_number)
     downloadPage();   
+  }else if(command == "help"){
+    helpMe()
   }else{
     setEmoji(match, p_number)
   }

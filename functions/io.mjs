@@ -11,3 +11,8 @@ export function copyHtmlToClipboad(){
 }
 
 
+export function helpMe(){
+    window.open("https://docs.typewriter.cosmicgarage.ch")
+}
+
+
